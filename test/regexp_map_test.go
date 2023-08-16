@@ -1,9 +1,9 @@
 package regexp_map_test
 
 import (
-	regexp_map "regex_hash_map"
 	"testing"
 
+	"github.com/CorrectRoadH/regexp_map"
 	"github.com/stretchr/testify/assert"
 )
 

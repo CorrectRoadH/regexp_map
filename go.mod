@@ -1,4 +1,4 @@
-module regex_hash_map
+module github.com/CorrectRoadH/regexp_map
 
 go 1.20
 
