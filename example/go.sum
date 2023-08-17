@@ -4,3 +4,7 @@ github.com/CorrectRoadH/regexp_map v0.1.2 h1:hU3F6OWlxge6M7Nb216htHVorSa74Iq869a
 github.com/CorrectRoadH/regexp_map v0.1.2/go.mod h1:7/KQomOU+jdl7mW7/pGWLSvJJy1J+k2meJN8A0UNVV4=
 github.com/CorrectRoadH/regexp_map v0.2.0 h1:FTugqNfgcCvsZZwyzUV/qV7gqCrUUeI5nkwIDo2+eJw=
 github.com/CorrectRoadH/regexp_map v0.2.0/go.mod h1:I0INFXOAKYhmk9TQZ9/zV206qCbg6elQlzlV/6UFJCI=
+github.com/CorrectRoadH/regexp_map v0.2.1 h1:vJBKYFyghk7g5345jIGzbI9aO1o98SN3oYA6MF5xbuw=
+github.com/CorrectRoadH/regexp_map v0.2.1/go.mod h1:7grq9Kkdc1MVa2GUK2CVICXKdWCOHiao5FtQu1NXdyc=
+golang.org/x/exp v0.0.0-20230811145659-89c5cff77bcb h1:mIKbk8weKhSeLH2GmUTrvx8CjkyJmnU1wFmg59CUjFA=
+golang.org/x/exp v0.0.0-20230811145659-89c5cff77bcb/go.mod h1:FXUEEKJgO7OQYeo8N01OfiKP8RXMtf6e8aTskBGqWdc=

@@ -1,6 +1,7 @@
 package regexp_map
 
 import (
+	"fmt"
 	"regexp"
 
 	"golang.org/x/exp/rand"
@@ -27,8 +28,8 @@ func (r *RegexpNode) Insert(re string) {
 	if r.RegexpRaw == "" {
 		// fmt.Println("我是空节点，把", re, "放到我身上")
 		r.RegexpRaw = re
-		// r.Regexp = regexp.MustCompile(re)
-		return
+		r.Regexp = regexp.MustCompile(re)
+		// 建完自己，然后把自己给左或者右
 	}
 
 	// 随机插左右
@@ -92,6 +93,7 @@ func (r *RegexpNode) Find(content string) (string, bool) {
 			r.Left.Regexp = regexp.MustCompile(r.Left.RegexpRaw[:])
 		}
 		if r.Left.Regexp.MatchString(content) {
+			fmt.Println("左边匹配到了", r.Left.RegexpRaw)
 			result, ok := r.Left.Find(content)
 			return result, ok
 		}
@@ -102,6 +104,8 @@ func (r *RegexpNode) Find(content string) (string, bool) {
 			r.Right.Regexp = regexp.MustCompile(r.Right.RegexpRaw[:])
 		}
 		if r.Right.Regexp.MatchString(content) {
+			fmt.Println("左边匹配到了", r.Left.RegexpRaw)
+
 			result, ok := r.Right.Find(content)
 			return result, ok
 		}
@@ -152,17 +156,17 @@ func (r *Map[T]) Load(key string) (T, bool, string) {
 		return value, ok, key
 	}
 
-	// fmt.Println("开始找", r.RegexpTree)
+	fmt.Println("开始找", r.RegexpTree)
 	result, ok := r.RegexpTree.Find(key)
 	if ok {
-		// fmt.Println("在tree中找到了[", result, "]")
+		fmt.Println("在tree中找到了[", result, "]")
 		reMapResult, ok := r.internalMap[result]
 		if ok {
-			// fmt.Println("map中找到了", result)
+			fmt.Println("map中找到了", result)
 			return reMapResult, ok, result
 		}
 	}
-	// fmt.Println("啥都没有", result)
+	fmt.Println("啥都没有", result)
 
 	var zero T
 	return zero, false, ""
