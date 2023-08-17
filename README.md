@@ -35,3 +35,28 @@ func main() {
 	fmt.Println(result4, ok, key) //  false
 }
 ```
+
+# Benchmark
+
+The time cost is O(log(n)).
+
+```bash
+➜  regexp_map git:(main) ✗ go test -bench='Bench' -benchtime 5s ./...
+?       github.com/CorrectRoadH/regexp_map      [no test files]
+goos: darwin
+goarch: arm64
+pkg: github.com/CorrectRoadH/regexp_map/benchmark
+Benchmark_store_and_load_pure_Regepx_V1-10         16027            635505 ns/op
+Benchmark_store_and_load_string_V1-10           18337298               395.2 ns/op
+Benchmark_store_and_load_mix_V1-10                 15450            622352 ns/op
+PASS
+ok      github.com/CorrectRoadH/regexp_map/benchmark    35.600s
+PASS
+ok      github.com/CorrectRoadH/regexp_map/test 1.807s
+```
+# RoadMap
+- [ ] add thread safe
+- [ ] optimize the performance
+- [ ] add Regexp check
+- [ ] implment delete api
+- [ ] add more usage
