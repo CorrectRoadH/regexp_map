@@ -11,41 +11,12 @@ type RegexHashMap[T any] struct {
 	regexMap    map[string]T
 }
 
-type RegexHashMapInterface[T any] interface {
-	Get(key string) (T, bool, string)
-	SetStringKey(key string, value T)
-	SetRegexpKey(key string, value T)
-}
-
-func NewRegexHashMap[T any]() RegexHashMapInterface[T] {
-	return &RegexHashMap[T]{
-		internalMap: make(map[string]T),
-		regexMap:    make(map[string]T),
-	}
-}
-
-func (r *RegexHashMap[T]) Get(key string) (T, bool, string) {
-	if value, ok := r.internalMap[key]; ok {
-		return value, ok, key
-	}
-
-	for k, v := range r.regexMap {
-		pattern := regexp.MustCompile(k)
-		if pattern.MatchString(key) {
-			return v, true, k
-		}
-	}
-
-	var zero T
-	return zero, false, ""
-}
-
-func (r *RegexHashMap[T]) SetStringKey(key string, value T) {
-	r.internalMap[key] = value
-}
-
-func (r *RegexHashMap[T]) SetRegexpKey(key string, value T) {
-	r.regexMap[key] = value
+type RegexpMap[T any] interface {
+	Store(key string, value T)
+	StoreRegex(key string, value T)
+	Load(key string) (T, bool, string)
+	Delete(key string)
+	Range(f func(key string, value any) bool)
 }
 
 type RegexpNode struct {
@@ -151,25 +122,31 @@ func (r *RegexpNode) Find(content string) (string, bool) {
 	return "", false
 }
 
-type RegexHashMapV2[T any] struct {
+type Map[T any] struct {
 	internalMap map[string]T
 	regexMap    []string
 	RegexpTree  *RegexpNode
 }
 
-func NewRegexHashMapV2[T any]() RegexHashMapInterface[T] {
-	return &RegexHashMapV2[T]{
-		internalMap: make(map[string]T),
-		regexMap:    []string{},
-		RegexpTree:  &RegexpNode{},
+func (r *Map[T]) Store(key string, value T) {
+	if r.internalMap == nil {
+		r.internalMap = make(map[string]T)
 	}
-}
+	if r.RegexpTree == nil {
+		r.RegexpTree = &RegexpNode{}
+	}
 
-func (r RegexHashMapV2[T]) SetStringKey(key string, value T) {
 	r.internalMap[key] = value
 }
 
-func (r *RegexHashMapV2[T]) SetRegexpKey(key string, value T) {
+func (r *Map[T]) StoreRegex(key string, value T) {
+	if r.internalMap == nil {
+		r.internalMap = make(map[string]T)
+	}
+	if r.RegexpTree == nil {
+		r.RegexpTree = &RegexpNode{}
+	}
+
 	_, ok := r.internalMap[key]
 	if ok {
 		r.internalMap[key] = value
@@ -182,7 +159,7 @@ func (r *RegexHashMapV2[T]) SetRegexpKey(key string, value T) {
 }
 
 // 建个二分树????🤪
-func (r *RegexHashMapV2[T]) Get(key string) (T, bool, string) {
+func (r *Map[T]) Load(key string) (T, bool, string) {
 
 	if value, ok := r.internalMap[key]; ok {
 		return value, ok, key
@@ -202,4 +179,21 @@ func (r *RegexHashMapV2[T]) Get(key string) (T, bool, string) {
 
 	var zero T
 	return zero, false, ""
+}
+
+func (r *Map[T]) LoadAndDelete(key string) (T, bool) {
+	value, ok, _ := r.Load(key)
+	return value, ok
+}
+
+func (m *Map[T]) Delete(key string) {
+	m.LoadAndDelete(key)
+}
+
+func (m *Map[T]) Range(f func(key string, value any) bool) {
+	for k, v := range m.internalMap {
+		if !f(k, v) {
+			break
+		}
+	}
 }

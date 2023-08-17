@@ -7,87 +7,101 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRegexHashMap(t *testing.T) {
-	testMap := regexp_map.NewRegexHashMap[string]()
-	testMap.SetStringKey("test", "test")
-	testMap.SetStringKey("1234", "41234")
-	testMap.SetRegexpKey("\\.cpp$", "41234")
+func TestStringKeyStoreAndLoad(t *testing.T) {
+	testMap := regexp_map.Map[string]{}
+	testMap.Store("test", "test")
+	testMap.Store("1234", "41234")
 
-	result1, ok, _ := testMap.Get("test")
+	result1, ok, _ := testMap.Load("test")
 	assert.True(t, ok)
 	assert.Equal(t, "test", result1)
 
-	result2, ok, _ := testMap.Get("hello.cpp")
+	result2, ok, _ := testMap.Load("1234")
 	assert.True(t, ok)
 	assert.Equal(t, "41234", result2)
 
-	result3, ok, _ := testMap.Get("\\.cs$")
+	result3, ok, _ := testMap.Load("123")
 	assert.False(t, ok)
 	assert.Equal(t, "", result3)
 }
 
-func TestRegexV2HashMap(t *testing.T) {
-	testMap := regexp_map.NewRegexHashMapV2[string]()
-	testMap.SetStringKey("test", "test")
-	testMap.SetStringKey("1234", "41234")
-	testMap.SetRegexpKey("\\.cpp$", "cpp")
-	testMap.SetRegexpKey("\\.tpp$", "tpp")
-	testMap.SetRegexpKey("\\.dpp$", "dpp")
-	testMap.SetRegexpKey("\\.gpp$", "gpp")
-	testMap.SetRegexpKey("\\.hpp$", "hpp")
-	testMap.SetRegexpKey("\\.fpp$", "fpp")
-	testMap.SetRegexpKey("\\.g34pp$", "fuck")
-	testMap.SetRegexpKey("\\.hpp$", "hpp")
-	testMap.SetRegexpKey("\\.fpp$", "fpp")
-	testMap.SetRegexpKey("\\.g34pp$", "fucfk")
-	testMap.SetRegexpKey("\\.hp234p$", "hpp")
-	testMap.SetRegexpKey("\\.fp234p$", "fpp")
-	testMap.SetRegexpKey("\\.g34324pp$", "fuck")
-	testMap.SetRegexpKey("\\.g34pp$", "ddd")
-	testMap.SetRegexpKey("\\.fhpp$", "hpp")
-	testMap.SetRegexpKey("\\.ffpp$", "fpp")
-	testMap.SetRegexpKey("\\.g3234pp$", "fuck")
-	testMap.SetRegexpKey("\\.hp223134p$", "hpp")
-	testMap.SetRegexpKey("\\.fp234pgf$", "fpp")
-	testMap.SetRegexpKey("\\.g34324sdpp$", "fuck")
-	testMap.SetRegexpKey("\\.g34psdfp$", "fuck")
-	testMap.SetRegexpKey("\\.hpsdsdaffp$", "hpp")
-	testMap.SetRegexpKey("\\.fpssdfdfp$", "fpp")
-	testMap.SetRegexpKey("\\.g34psdfp$", "fuck")
-	testMap.SetRegexpKey("\\.hp234dsafp$", "hpp")
-	testMap.SetRegexpKey("\\.fp234sdasdffp$", "fpp")
-	testMap.SetRegexpKey("\\.g34324pdsafsdp$", "fuck")
+func TestRegexpKeyStoreAndLoad(t *testing.T) {
+	testMap := regexp_map.Map[string]{}
+	testMap.StoreRegex("\\.cpp$", "cpp")
+	testMap.StoreRegex("\\.cs$", "cs")
+	testMap.StoreRegex("\\.cpp$", "c++")
 
-	result1, ok, _ := testMap.Get("test")
+	result1, ok, _ := testMap.Load("test.cpp")
+	assert.True(t, ok)
+	assert.Equal(t, "c++", result1)
+
+	result4, ok, _ := testMap.Load("main.cs")
+	assert.True(t, ok)
+	assert.Equal(t, "cs", result4)
+
+	result5, ok, _ := testMap.Load("hell_world.exe")
+	assert.False(t, ok)
+	assert.Equal(t, "", result5)
+}
+
+func TestMixKeyStoreAndLoad(t *testing.T) {
+	testMap := regexp_map.Map[string]{}
+	testMap.Store("test", "test")
+	testMap.Store("1234", "41234")
+	testMap.StoreRegex("\\.cpp$", "cpp")
+	testMap.StoreRegex("\\.cs$", "cs")
+	testMap.StoreRegex("\\.cpp$", "c++")
+
+	result1, ok, _ := testMap.Load("test")
 	assert.True(t, ok)
 	assert.Equal(t, "test", result1)
 
-	result2, ok, _ := testMap.Get("h313el423lo.cpp")
+	result2, ok, _ := testMap.Load("1234")
 	assert.True(t, ok)
-	assert.Equal(t, "cpp", result2)
+	assert.Equal(t, "41234", result2)
 
-	result4, ok, _ := testMap.Get("he2134llo.dpp")
-	assert.True(t, ok)
-	assert.Equal(t, "dpp", result4)
-
-	result3, ok, _ := testMap.Get("\\.cs$")
+	result3, ok, _ := testMap.Load("out")
 	assert.False(t, ok)
 	assert.Equal(t, "", result3)
 
-	result5, ok, _ := testMap.Get("\\.c2134s$")
+	result4, ok, _ := testMap.Load("test.cpp")
+	assert.True(t, ok)
+	assert.Equal(t, "c++", result4)
+
+	result5, ok, _ := testMap.Load("main.cs")
+	assert.True(t, ok)
+	assert.Equal(t, "cs", result5)
+
+	result6, ok, _ := testMap.Load("hell_world.exe")
+	assert.False(t, ok)
+	assert.Equal(t, "", result6)
+}
+
+func TestMoreRegexpKeyStoreAndLoad(t *testing.T) {
+	testMap := regexp_map.Map[string]{}
+	testMap.StoreRegex("\\.cpp$", "cpp")
+	testMap.StoreRegex("\\.cs$", "cs")
+	testMap.StoreRegex(`\.cpp$`, "c++")
+	testMap.StoreRegex(`(bilibili|youtube)`, "video")
+	testMap.StoreRegex(`(github\.com|v2ex\.com)`, "code")
+
+	result1, ok, _ := testMap.Load("test.cpp")
+	assert.True(t, ok)
+	assert.Equal(t, "c++", result1)
+
+	result2, ok, _ := testMap.Load("www.bilibili.com")
+	assert.True(t, ok)
+	assert.Equal(t, "video", result2)
+
+	result3, ok, _ := testMap.Load("www.v2ex.com")
+	assert.True(t, ok)
+	assert.Equal(t, "code", result3)
+
+	result4, ok, _ := testMap.Load("main.cs")
+	assert.True(t, ok)
+	assert.Equal(t, "cs", result4)
+
+	result5, ok, _ := testMap.Load("hell_world.exe")
 	assert.False(t, ok)
 	assert.Equal(t, "", result5)
-
-	result6, ok, _ := testMap.Get("test.cpp.cpp")
-	assert.True(t, ok)
-	assert.Equal(t, "cpp", result6)
-
-	result7, ok, _ := testMap.Get("test.cpp.cpp.g34pp")
-	assert.True(t, ok)
-	assert.Equal(t, "ddd", result7)
-
-	result8, ok, _ := testMap.Get("test.g34324pdsafsdp")
-	assert.True(t, ok)
-	assert.Equal(t, "fuck", result8)
-
 }

@@ -2,11 +2,15 @@ package main
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/CorrectRoadH/regexp_map"
 )
 
 func main() {
+
+	sycnMap := sync.Map{}
+
 	testMap := regexp_map.NewRegexHashMap[string]()
 	testMap.SetStringKey("https://youtube.com", "youtube")
 	testMap.SetStringKey("https://bilibili.com", "bilibili")
