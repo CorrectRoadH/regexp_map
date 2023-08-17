@@ -17,21 +17,21 @@ import (
 )
 
 func main() {
-	testMap := regexp_map.NewRegexHashMap[string]()
-	testMap.SetStringKey("https://youtube.com", "youtube")
-	testMap.SetStringKey("https://bilibili.com", "bilibili")
-	testMap.SetRegexpKey("^https?://(?:www\\.)?bilibili\\.com(/[\\w-]+)*/?(\\?[^#]*)?(#.*)?$", "bilibili")
+	reMap := regexp_map.Map[string]{}
+	reMap.Store("https://youtube.com", "youtube")
+	reMap.Store("https://bilibili.com", "bilibili")
+	reMap.StoreRegex("^https?://(?:www\\.)?bilibili\\.com(/[\\w-]+)*/?(\\?[^#]*)?(#.*)?$", "bilibili")
 
-	result1, ok, key := testMap.Get("https://youtube.com")
+	result1, ok, key := reMap.Load("https://youtube.com")
 	fmt.Println(result1, ok, key) // youtube true https://youtube.com
 
-	result2, ok, _ := testMap.Get("https://bilibili.com")
+	result2, ok, _ := reMap.Load("https://bilibili.com")
 	fmt.Println(result2, ok) // bilibili true
 
-	result3, ok, key := testMap.Get("https://www.bilibili.com/video/BV1394y1k7D2/")
+	result3, ok, key := reMap.Load("https://www.bilibili.com/video/BV1394y1k7D2/")
 	fmt.Println(result3, ok, key) // bilibili true ^https?://(?:www\.)?bilibili\.com(/[\w-]+)*/?(\?[^#]*)?(#.*)?$
 
-	result4, ok, key := testMap.Get("https://discord.com")
+	result4, ok, key := reMap.Load("https://discord.com")
 	fmt.Println(result4, ok, key) //  false
 }
 ```
