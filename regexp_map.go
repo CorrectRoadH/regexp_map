@@ -26,7 +26,7 @@ func (r *RegexpNode) Insert(re string) {
 	// 如果我是空
 	if r.RegexpRaw == "" {
 		// fmt.Println("我是空节点，把", re, "放到我身上")
-		r.RegexpRaw = re[:]
+		r.RegexpRaw = re
 		// r.Regexp = regexp.MustCompile(re)
 		return
 	}
@@ -41,14 +41,16 @@ func (r *RegexpNode) Insert(re string) {
 			// fmt.Println("把", r.RegexpRaw, "放到右边")
 			r.Right = &RegexpNode{
 				// Regexp:    regexp.MustCompile(r.RegexpRaw[:]),
-				RegexpRaw: r.RegexpRaw[:],
+				RegexpRaw: r.RegexpRaw,
+				Regexp:    r.Regexp,
 			}
 		} else {
 			// fmt.Println("把", r.RegexpRaw, "放到左边")
 
 			r.Left = &RegexpNode{
 				// Regexp:    regexp.MustCompile(r.RegexpRaw[:]),
-				RegexpRaw: r.RegexpRaw[:],
+				RegexpRaw: r.RegexpRaw,
+				Regexp:    r.Regexp,
 			}
 		}
 	}
@@ -56,16 +58,15 @@ func (r *RegexpNode) Insert(re string) {
 	if random == 0 {
 		if r.Left == nil {
 			r.Left = &RegexpNode{
-				RegexpRaw: re[:],
+				RegexpRaw: re,
 			}
 		} else {
 			r.Left.Insert(re)
 		}
-
 	} else {
 		if r.Right == nil {
 			r.Right = &RegexpNode{
-				RegexpRaw: re[:],
+				RegexpRaw: re,
 			}
 		} else {
 			r.Right.Insert(re)
@@ -82,35 +83,26 @@ func (r *RegexpNode) Insert(re string) {
 }
 
 func (r *RegexpNode) Find(content string) (string, bool) {
-
-	// fmt.Println("我是", r.RegexpRaw)
 	if r.Left == nil && r.Right == nil {
-		// fmt.Println("是叶子")
-		if r.Regexp == nil {
-			r.Regexp = regexp.MustCompile(r.RegexpRaw)
-		}
-		if r.Regexp.MatchString(content) {
-			return r.RegexpRaw, true
-		}
-	}
-
-	if r.Regexp == nil {
-		r.Regexp = regexp.MustCompile(r.RegexpRaw)
-	}
-	if !r.Regexp.MatchString(content) {
-		return "", false
+		return r.RegexpRaw, true
 	}
 
 	if r.Left != nil {
-		result, ok := r.Left.Find(content)
-		if ok {
+		if r.Left.Regexp == nil {
+			r.Left.Regexp = regexp.MustCompile(r.Left.RegexpRaw[:])
+		}
+		if r.Left.Regexp.MatchString(content) {
+			result, ok := r.Left.Find(content)
 			return result, ok
 		}
 	}
 
 	if r.Right != nil {
-		result, ok := r.Right.Find(content)
-		if ok {
+		if r.Right.Regexp == nil {
+			r.Right.Regexp = regexp.MustCompile(r.Right.RegexpRaw[:])
+		}
+		if r.Right.Regexp.MatchString(content) {
+			result, ok := r.Right.Find(content)
 			return result, ok
 		}
 	}
