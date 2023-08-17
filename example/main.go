@@ -7,7 +7,6 @@ import (
 )
 
 func main() {
-
 	reMap := regexp_map.Map[string]{}
 	reMap.Store("https://youtube.com", "youtube")
 	reMap.Store("https://bilibili.com", "bilibili")

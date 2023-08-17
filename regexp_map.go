@@ -6,11 +6,6 @@ import (
 	"golang.org/x/exp/rand"
 )
 
-type RegexHashMap[T any] struct {
-	internalMap map[string]T
-	regexMap    map[string]T
-}
-
 type RegexpMap[T any] interface {
 	Store(key string, value T)
 	StoreRegex(key string, value T)
@@ -181,8 +176,8 @@ func (r *Map[T]) Load(key string) (T, bool, string) {
 	return zero, false, ""
 }
 
-func (r *Map[T]) LoadAndDelete(key string) (T, bool) {
-	value, ok, _ := r.Load(key)
+func (m *Map[T]) LoadAndDelete(key string) (T, bool) {
+	value, ok, _ := m.Load(key)
 	return value, ok
 }
 
